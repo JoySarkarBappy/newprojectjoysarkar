@@ -133,7 +133,7 @@ bash scripts/package-mac.sh     # Mac zip
 cd android && ./gradlew assembleRelease
 ```
 
-Every push runs the desktop tests, the Android unit tests, and an Android emulator test that installs the app and downloads a PDF, an MP3 converted from a video, a video from archive.org, and a large file it pauses and resumes. Pushing a tag such as `v1.0.1` builds every version and publishes them on the Releases page. Android releases are signed with Srot's key, which is stored encrypted in `android/signing/` and unlocked by the `SROT_SIGNING_PASSWORD` repository secret.
+Every push runs the desktop tests, the Android unit tests, and an Android emulator test that installs the app and downloads a PDF, an MP3 converted from a video, a video from archive.org, and a large file it pauses and resumes. Changing the number in [`VERSION`](VERSION) on `main` (or running the Release workflow from the Actions tab) builds every version and publishes them on the Releases page. Android releases are signed with Srot's key, which is stored encrypted in `android/signing/` and unlocked by the `SROT_SIGNING_PASSWORD` repository secret.
 
 ## License
 

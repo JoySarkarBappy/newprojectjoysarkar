@@ -1,20 +1,17 @@
 name: Release
 
-# Push a tag such as v1.0.1 (or run this by hand) to build every version of Srot and publish them on the Releases page.
+# Change the version number in the VERSION file on main (or run this from the Actions tab) to build every
+# version of Srot and publish them together on the Releases page.
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    paths: [VERSION]
   workflow_dispatch:
-    inputs:
-      tag:
-        description: Version tag to publish, for example v1.0.1
-        required: true
 
 permissions:
   contents: write
 
 env:
-  TAG: ${{ github.event.inputs.tag || github.ref_name }}
   # SHA-256 of Srot's Android signing certificate. A release signed with any other key is refused.
   SROT_CERT_SHA256: 3683f0d63b9c0b8e40e59fc65b6deb6819af0a0498d1cdb562115324f9e64a5b
 
@@ -126,6 +123,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          TAG="v$(tr -d ' \r\n' < VERSION)"
+          echo "Publishing $TAG"
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$TAG" dist/* --clobber --repo "$GITHUB_REPOSITORY"
           else
