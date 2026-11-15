@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Srot</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="bar">
+  <div class="brand" aria-hidden="true">
+    <svg viewBox="0 0 28 16" width="28" height="16"><path d="M1 5c4.3-4 8.7-4 13 0s8.700 4 13 0M1 12c4.3-4 8.7-4 13 0s8.700 4 13 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+    <span>Srot</span>
+  </div>
+  <div class="tools">
+    <button id="btn-add" class="btn primary" title="Add a download link (⌘N)">Add link</button>
+    <button id="btn-video" class="btn" title="Download a video from a web page (⇧⌘N)">Add video</button>
+    <span class="gap"></span>
+    <button id="btn-resume" class="btn icon" title="Resume" aria-label="Resume" disabled></button>
+    <button id="btn-pause" class="btn icon" title="Pause" aria-label="Pause" disabled></button>
+    <button id="btn-remove" class="btn icon" title="Remove" aria-label="Remove" disabled></button>
+    <button id="btn-more" class="btn icon" title="More" aria-label="More"></button>
+  </div>
+  <input id="search" class="search" type="search" placeholder="Search downloads" aria-label="Search downloads">
+  <button id="btn-theme" class="btn icon" title="Switch to dark mode" aria-label="Switch between light and dark mode"></button>
+  <button id="btn-settings" class="btn icon" title="Settings (⌘,)" aria-label="Settings"></button>
+</header>
+
+<div class="body">
+  <aside class="sidebar">
+    <nav id="side" class="side" aria-label="Filters"></nav>
+    <div id="credit" class="credit">
+      <span class="credit-label">Developed by</span>
+      <strong id="credit-a"></strong>
+      <strong id="credit-b"></strong>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="cols" aria-hidden="true">
+      <span>Name</span><span class="num">Size</span><span>Progress</span><span class="num">Speed</span><span class="num">Time left</span><span class="num">Added</span>
+    </div>
+    <div id="rows" class="rows" role="listbox" aria-multiselectable="true" tabindex="0" aria-label="Downloads"></div>
+    <div id="empty" class="empty" hidden>
+      <p class="empty-title"></p>
+      <p class="empty-hint"></p>
+    </div>
+    <section id="detail" class="detail" hidden aria-label="Details">
+      <div class="detail-head">
+        <strong id="d-name"></strong>
+        <span id="d-state" class="muted"></span>
+      </div>
+      <div id="d-map" class="map" role="img" aria-label="Which parts of the file have arrived"></div>
+      <dl class="facts">
+        <dt>Link</dt><dd><span id="d-url" class="clip"></span><button id="d-copy" class="link">Copy</button></dd>
+        <dt>Saved to</dt><dd><span id="d-path" class="clip"></span><button id="d-reveal" class="link">Show in folder</button></dd>
+      </dl>
+    </section>
+  </main>
+</div>
+
+<footer class="status">
+  <span id="s-speed" class="s-speed"></span>
+  <span id="s-active" class="muted"></span>
+  <span class="grow"></span>
+  <span id="s-hours" class="muted"></span>
+  <button id="s-limit" class="link"></button>
+</footer>
+
+<dialog id="dlg-add" class="sheet">
+  <form method="dialog">
+    <h2>Add link</h2>
+    <textarea id="add-urls" rows="3" placeholder="Paste one or more links, one per line" spellcheck="false" aria-label="Links"></textarea>
+    <p id="add-info" class="hint" aria-live="polite"></p>
+    <label id="add-name-row" class="field" hidden><span>Save as</span><input id="add-name" type="text" spellcheck="false"></label>
+    <div class="field"><span>Save to</span>
+      <div class="pathpick"><span id="add-dir" class="clip"></span><button type="button" id="add-dir-pick" class="btn small">Change…</button></div>
+    </div>
+    <label class="field"><span>Connections</span><input id="add-conn" type="number" min="1" max="32" step="1"></label>
+    <fieldset class="field">
+      <legend>When</legend>
+      <label class="radio"><input type="radio" name="add-when" value="now" checked> Start now</label>
+      <label class="radio"><input type="radio" name="add-when" value="paused"> Add to the list, paused</label>
+      <label class="radio"><input type="radio" name="add-when" value="later"> Start at <input id="add-at" type="datetime-local"></label>
+    </fieldset>
+    <div class="actions">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="add-ok" class="btn primary">Download</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-video" class="sheet">
+  <form method="dialog">
+    <h2>Add video</h2>
+    <div class="inline">
+      <input id="vid-url" type="url" placeholder="Link to the page that plays the video" spellcheck="false" aria-label="Video page link">
+      <button type="button" id="vid-check" class="btn">Check</button>
+    </div>
+    <p id="vid-info" class="hint" aria-live="polite"></p>
+    <div id="vid-tools" class="notice" hidden></div>
+    <label class="field"><span>Quality</span><select id="vid-quality"></select></label>
+    <label class="check"><input id="vid-playlist" type="checkbox"> Download the whole playlist</label>
+    <div class="field"><span>Save to</span>
+      <div class="pathpick"><span id="vid-dir" class="clip"></span><button type="button" id="vid-dir-pick" class="btn small">Change…</button></div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="vid-ok" class="btn primary">Download</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-settings" class="sheet wide">
+  <form method="dialog">
+    <h2>Settings</h2>
+    <div class="settings">
+      <section>
+        <h3>Appearance</h3>
+        <label class="field"><span>Colours</span>
+          <select id="set-theme">
+            <option value="system">Same as the computer</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select></label>
+      </section>
+      <section>
+        <h3>Downloads</h3>
+        <div class="field"><span>Save to</span>
+          <div class="pathpick"><span id="set-dir" class="clip"></span><button type="button" id="set-dir-pick" class="btn small">Change…</button></div>
+        </div>
+        <label class="field"><span>Downloads at the same time</span><input id="set-concurrent" type="number" min="1" max="10"></label>
+        <label class="field"><span>Connections per download</span><input id="set-conn" type="number" min="1" max="32"></label>
+        <label class="field"><span>Speed limit when switched on</span>
+          <span class="unit"><input id="set-limit" type="number" min="16" step="16"> KB/s</span></label>
+        <label class="check"><input id="set-hours-on" type="checkbox"> Only download between
+          <input id="set-hours-start" type="time"> and <input id="set-hours-end" type="time"></label>
+        <label class="check"><input id="set-notify" type="checkbox"> Show a notification when a download finishes or fails</label>
+        <label class="check"><input id="set-awake" type="checkbox"> Keep the computer awake while downloading</label>
+      </section>
+      <section>
+        <h3>Browser</h3>
+        <p class="hint">The extension sends download links from Chrome or Edge to Srot. Save the extension folder, then in the browser open the Extensions page, turn on Developer mode, choose “Load unpacked” and pick that folder. Paste the pairing code into the extension’s options.</p>
+        <div class="field"><span>Pairing code</span>
+          <div class="pathpick"><code id="set-token" class="clip"></code><button type="button" id="set-token-copy" class="btn small">Copy</button></div>
+        </div>
+        <label class="field"><span>Port</span><input id="set-port" type="number" min="1024" max="65535"></label>
+        <p id="set-api-error" class="error" hidden></p>
+        <button type="button" id="set-ext" class="btn">Save extension folder…</button>
+      </section>
+      <section>
+        <h3>Video sites</h3>
+        <p class="hint">Videos are fetched with two free helper programs. Srot downloads them into its own data folder when you ask.</p>
+        <div class="tool"><div><strong>yt-dlp</strong> <span id="tool-ytdlp" class="muted"></span></div>
+          <div><button type="button" id="tool-ytdlp-install" class="btn small">Install</button>
+            <button type="button" id="tool-ytdlp-update" class="btn small" hidden>Update</button></div></div>
+        <div class="tool"><div><strong>ffmpeg</strong> <span id="tool-ffmpeg" class="muted"></span></div>
+          <div><button type="button" id="tool-ffmpeg-install" class="btn small">Install</button></div></div>
+        <label class="field"><span>Quality for videos sent from the browser</span><select id="set-quality"></select></label>
+      </section>
+    </div>
+    <div class="actions">
+      <span id="set-version" class="muted grow"></span>
+      <button type="submit" class="btn primary">Done</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-remove" class="sheet narrow">
+  <form method="dialog">
+    <h2 id="rm-title"></h2>
+    <p id="rm-text" class="hint"></p>
+    <label id="rm-files-row" class="check"><input id="rm-files" type="checkbox"> Also delete the downloaded files from the disk</label>
+    <div class="actions">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" class="btn danger">Remove</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-url" class="sheet narrow">
+  <form method="dialog">
+    <h2>Update link</h2>
+    <p class="hint">Open the download page again in your browser, copy the fresh link and paste it here. Srot continues from where it stopped if the file is the same.</p>
+    <input id="url-new" type="url" spellcheck="false" aria-label="New link">
+    <p id="url-error" class="error" hidden></p>
+    <div class="actions">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" class="btn primary">Continue download</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-schedule" class="sheet narrow">
+  <form method="dialog">
+    <h2>Start later</h2>
+    <label class="field"><span>Start at</span><input id="sch-at" type="datetime-local"></label>
+    <div class="actions">
+      <button type="button" class="btn" id="sch-clear">Remove the timer</button>
+      <span class="grow"></span>
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" class="btn primary">Set timer</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="menu" class="menu" role="menu" hidden></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

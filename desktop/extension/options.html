@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Srot options</title><link rel="stylesheet" href="ui.css"></head>
+<body class="options">
+<h1>Srot browser integration</h1>
+<p class="muted">Open Srot, go to Settings, copy the pairing code from the Browser section and paste it here. The code makes sure only this extension can add downloads to the app.</p>
+<label><span>Pairing code</span><input id="token" type="text" spellcheck="false" autocomplete="off"></label>
+<label><span>Port (same as in Srot’s settings)</span><input id="port" type="number" min="1024" max="65535"></label>
+<label><span>Leave files smaller than this to the browser</span><span><input id="min" type="number" min="0" step="64"> KB</span></label>
+<label class="check"><input id="enabled" type="checkbox"> Send browser downloads to Srot</label>
+<div class="rowbtn"><button id="save" class="primary">Save and test</button></div>
+<p id="state" class="state" style="margin-top:12px"></p>
+<p class="muted" style="margin-top:28px">Srot Download Manager, developed by Joy Sarkar and Dhrubo Das</p>
+<script src="options.js"></script>
+</body></html>

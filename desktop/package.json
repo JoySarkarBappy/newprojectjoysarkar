@@ -1,0 +1,21 @@
+{
+  "name": "srot",
+  "productName": "Srot",
+  "version": "1.0.0",
+  "description": "Srot Download Manager - fast segmented downloads with pause/resume, queue, scheduler, video sites and browser integration",
+  "main": "src/main/main.js",
+  "license": "GPL-3.0-or-later",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.js",
+    "e2e": "bash scripts/e2e.sh",
+    "package:mac": "bash scripts/package-mac.sh",
+    "package:win": "bash scripts/package-win.sh"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^45.3.0"
+  },
+  "author": "Joy Sarkar and Dhrubo Das"
+}

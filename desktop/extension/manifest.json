@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Srot Download Manager",
+  "version": "1.0.0",
+  "description": "Sends downloads and video pages from the browser to the Srot app on this computer.",
+  "permissions": ["downloads", "contextMenus", "storage", "cookies", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "Srot" },
+  "options_page": "options.html",
+  "icons": { "16": "icon16.png", "48": "icon48.png", "128": "icon128.png" }
+}
