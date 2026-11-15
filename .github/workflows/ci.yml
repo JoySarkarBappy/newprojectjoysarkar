@@ -93,3 +93,49 @@ jobs:
         with:
           name: emulator-results
           path: android/ci-out
+
+  mac-package:
+    name: Mac build
+    if: github.event_name != 'pull_request'
+    runs-on: macos-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - run: npm ci
+      - name: Build, then check the signature and that the app starts
+        run: |
+          bash scripts/package-mac.sh arm64
+          APP=dist/Srot-darwin-arm64/Srot.app
+          codesign --verify --deep --strict "$APP" && echo "signature ok"
+          plutil -p "$APP/Contents/Info.plist" | grep -E "CFBundleIdentifier|CFBundleShortVersionString|NSHumanReadableCopyright"
+          "$APP/Contents/MacOS/Srot" --version >/dev/null 2>&1 & pid=$!; sleep 8; kill $pid 2>/dev/null || true
+          echo "launch ok"
+
+  windows-package:
+    name: Windows build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - run: npm ci
+      - name: Build and check the contents
+        run: |
+          bash scripts/package-win.sh x64
+          unzip -l dist/Srot-windows-x64.zip | grep -E "Srot/Srot.exe|resources/app/src/main/main.js|resources/app/extension/manifest.json"
